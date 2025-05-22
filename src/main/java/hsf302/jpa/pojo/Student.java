@@ -1,6 +1,8 @@
 package hsf302.jpa.pojo;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Students")
@@ -21,15 +23,26 @@ public class Student {
     @Column (name = "password", length = 50, nullable = false)
     private String password;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "student_id")
+    private List<Subject> subjects = new ArrayList<>();
+
     public Student(Long id, String name, String birthYear, String email, String password) {
         this.id = id;
         this.name = name;
         this.birthYear = birthYear;
         this.email = email;
         this.password = password;
+        this.subjects = new ArrayList<Subject>();
+
     }
 
     public Student() {
+        this.subjects = new ArrayList<Subject>();
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -62,5 +75,13 @@ public class Student {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
     }
 }

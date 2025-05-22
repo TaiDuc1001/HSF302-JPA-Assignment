@@ -6,6 +6,6 @@ public interface StudentRepository {
     public void createStudent(Student student);
     public void removeStudent(Student student);
     public void updateStudent(Student student);
-    public void findStudentById(Long id);
+    public Student findStudentById(Long id);
     public void updateStudentById(Long id, Student student);
 }
