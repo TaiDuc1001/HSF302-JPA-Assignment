@@ -8,6 +8,7 @@ import jakarta.persistence.Persistence;
 
 public class StudentDAO implements StudentRepository {
     private static String persistenceName = "studentPU";
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
 
     @Override
     public void createStudent(Student student) {
@@ -16,7 +17,6 @@ public class StudentDAO implements StudentRepository {
 
     @Override
     public void removeStudent(Student student) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Student managedStudent = em.find(Student.class, student.getId());
@@ -25,27 +25,22 @@ public class StudentDAO implements StudentRepository {
         }
         em.getTransaction().commit();
         em.close();
-        emf.close();
     }
 
     @Override
     public void updateStudent(Student student) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.merge(student);
         em.getTransaction().commit();
         em.close();
-        emf.close();
     }
 
     @Override
     public Student findStudentById(Long id) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         Student student = em.find(Student.class, id);
         em.close();
-        emf.close();
         return student;
     }
 
@@ -55,23 +50,18 @@ public class StudentDAO implements StudentRepository {
     }
 
     public boolean addStudent(Student student) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.merge(student);
         em.getTransaction().commit();
         em.close();
-        emf.close();
-
         return true;
     }
 
     public java.util.List<Student> getAllStudents() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
-        java.util.List<Student> students = em.createQuery("SELECT s FROM Student s", Student.class).getResultList();
+        java.util.List<Student> students = em.createQuery("SELECT DISTINCT s FROM Student s LEFT JOIN FETCH s.subjects", Student.class).getResultList();
         em.close();
-        emf.close();
         return students;
     }
 }

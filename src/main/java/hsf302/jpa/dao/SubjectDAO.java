@@ -9,38 +9,32 @@ import java.util.List;
 
 public class SubjectDAO implements SubjectRepository {
     private static String persistenceName = "studentPU";
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
     @Override
     public void addSubject(Subject subject) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(subject);
         em.getTransaction().commit();
         em.close();
-        emf.close();
     }
     @Override
     public Subject findSubject(Long id) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         Subject subject = em.find(Subject.class, id);
         em.close();
-        emf.close();
         return subject;
     }
     @Override
     public void updateSubject(Subject subject) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.merge(subject);
         em.getTransaction().commit();
         em.close();
-        emf.close();
     }
     @Override
     public void deleteSubject(Long id) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Subject subject = em.find(Subject.class, id);
@@ -49,19 +43,12 @@ public class SubjectDAO implements SubjectRepository {
         }
         em.getTransaction().commit();
         em.close();
-        emf.close();
     }
     @Override
     public List<Subject> getAllSubjects() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceName);
         EntityManager em = emf.createEntityManager();
         List<Subject> subjects = em.createQuery("SELECT s FROM Subject s", Subject.class).getResultList();
-        System.out.println("DEBUG: in getAllSubjects() method");
-        for (Subject subject : subjects) {
-            System.out.println("DEBUG: Subject ID: " + subject.getId() + ", Name: " + subject.getName() + ", Code: " + subject.getCode());
-        }
         em.close();
-        emf.close();
         return subjects;
     }
 }

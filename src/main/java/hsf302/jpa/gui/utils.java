@@ -11,14 +11,34 @@ import java.util.ArrayList;
 public class utils {
     public static void addNewStudent(Scanner scanner, StudentDAO student_dao, SubjectDAO subject_dao) {
         Student student = new Student();
-        System.out.print("Enter name: ");
-        student.setName(scanner.nextLine());
-        System.out.print("Enter birth year: ");
-        student.setBirthYear(scanner.nextLine());
-        System.out.print("Enter email: ");
-        student.setEmail(scanner.nextLine());
-        System.out.print("Enter password: ");
-        student.setPassword(scanner.nextLine());
+        String name;
+        do {
+            System.out.print("Enter name (max 50 chars): ");
+            name = scanner.nextLine();
+            if (name.length() > 50) System.out.println("Name too long. Try again.");
+        } while (name.length() > 50 || name.isEmpty());
+        student.setName(name);
+        String birthYear;
+        do {
+            System.out.print("Enter birth year (4 digits): ");
+            birthYear = scanner.nextLine();
+            if (birthYear.length() != 4) System.out.println("Birth year must be 4 digits.");
+        } while (birthYear.length() != 4);
+        student.setBirthYear(birthYear);
+        String email;
+        do {
+            System.out.print("Enter email (max 50 chars): ");
+            email = scanner.nextLine();
+            if (email.length() > 50) System.out.println("Email too long. Try again.");
+        } while (email.length() > 50 || email.isEmpty());
+        student.setEmail(email);
+        String password;
+        do {
+            System.out.print("Enter password (max 50 chars): ");
+            password = scanner.nextLine();
+            if (password.length() > 50) System.out.println("Password too long. Try again.");
+        } while (password.length() > 50 || password.isEmpty());
+        student.setPassword(password);
 
         // List all available subjects
         List<Subject> allSubjects = subject_dao.getAllSubjects();
@@ -90,5 +110,193 @@ public class utils {
                 System.out.printf("| %-3d | %-20s | %-9s |\n", subj.getId(), subj.getName(), subj.getCode());
             }
         }
+    }
+
+    public static void updateStudent(Scanner scanner, StudentDAO student_dao) {
+        System.out.print("Enter student ID to update: ");
+        Long id = Long.parseLong(scanner.nextLine());
+        Student student = student_dao.findStudentById(id);
+        if (student == null) {
+            System.out.println("Student not found.");
+            return;
+        }
+        System.out.println("Leave field empty to keep current value.");
+        String name;
+        do {
+            System.out.print("Enter new name (current: " + student.getName() + ", max 50 chars): ");
+            name = scanner.nextLine();
+            if (!name.isEmpty() && name.length() > 50) System.out.println("Name too long. Try again.");
+        } while (!name.isEmpty() && name.length() > 50);
+        if (!name.isEmpty()) student.setName(name);
+        String birthYear;
+        do {
+            System.out.print("Enter new birth year (current: " + student.getBirthYear() + ", 4 digits): ");
+            birthYear = scanner.nextLine();
+            if (!birthYear.isEmpty() && birthYear.length() != 4) System.out.println("Birth year must be 4 digits.");
+        } while (!birthYear.isEmpty() && birthYear.length() != 4);
+        if (!birthYear.isEmpty()) student.setBirthYear(birthYear);
+        String email;
+        do {
+            System.out.print("Enter new email (current: " + student.getEmail() + ", max 50 chars): ");
+            email = scanner.nextLine();
+            if (!email.isEmpty() && email.length() > 50) System.out.println("Email too long. Try again.");
+        } while (!email.isEmpty() && email.length() > 50);
+        if (!email.isEmpty()) student.setEmail(email);
+        String password;
+        do {
+            System.out.print("Enter new password (current: hidden, max 50 chars): ");
+            password = scanner.nextLine();
+            if (!password.isEmpty() && password.length() > 50) System.out.println("Password too long. Try again.");
+        } while (!password.isEmpty() && password.length() > 50);
+        if (!password.isEmpty()) student.setPassword(password);
+        student_dao.updateStudent(student);
+        System.out.println("Student updated successfully!");
+    }
+
+    public static void deleteStudent(Scanner scanner, StudentDAO student_dao) {
+        System.out.print("Enter student ID to delete: ");
+        Long id = Long.parseLong(scanner.nextLine());
+        Student student = student_dao.findStudentById(id);
+        if (student == null) {
+            System.out.println("Student not found.");
+            return;
+        }
+        student_dao.removeStudent(student);
+        System.out.println("Student deleted successfully!");
+    }
+
+    public static void addNewSubject(Scanner scanner, SubjectDAO subject_dao) {
+        Subject subject = new Subject();
+        while (true) {
+            System.out.print("Enter subject name (max 50 chars): ");
+            String name = scanner.nextLine();
+            if (name.length() > 50) {
+                System.out.println("Name too long. Try again.");
+                continue;
+            }
+            subject.setName(name);
+            break;
+        }
+        while (true) {
+            System.out.print("Enter subject code (max 20 chars): ");
+            String code = scanner.nextLine();
+            if (code.length() > 20) {
+                System.out.println("Code too long. Try again.");
+                continue;
+            }
+            subject.setCode(code);
+            break;
+        }
+        subject_dao.addSubject(subject);
+        System.out.println("Subject added successfully!");
+    }
+
+    public static void updateSubject(Scanner scanner, SubjectDAO subject_dao) {
+        System.out.print("Enter subject ID to update: ");
+        Long id = Long.parseLong(scanner.nextLine());
+        Subject subject = subject_dao.findSubject(id);
+        if (subject == null) {
+            System.out.println("Subject not found.");
+            return;
+        }
+        System.out.println("Leave field empty to keep current value.");
+        while (true) {
+            System.out.print("Enter new name (current: " + subject.getName() + ", max 50 chars): ");
+            String name = scanner.nextLine();
+            if (!name.isEmpty() && name.length() > 50) {
+                System.out.println("Name too long. Try again.");
+                continue;
+            }
+            if (!name.isEmpty()) subject.setName(name);
+            break;
+        }
+        while (true) {
+            System.out.print("Enter new code (current: " + subject.getCode() + ", max 20 chars): ");
+            String code = scanner.nextLine();
+            if (!code.isEmpty() && code.length() > 20) {
+                System.out.println("Code too long. Try again.");
+                continue;
+            }
+            if (!code.isEmpty()) subject.setCode(code);
+            break;
+        }
+        subject_dao.updateSubject(subject);
+        System.out.println("Subject updated successfully!");
+    }
+
+    public static void deleteSubject(Scanner scanner, SubjectDAO subject_dao) {
+        Long id = null;
+        while (true) {
+            System.out.print("Enter subject ID to delete: ");
+            String input = scanner.nextLine();
+            try {
+                id = Long.parseLong(input);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid ID. Please enter a numeric subject ID.");
+            }
+        }
+        Subject subject = subject_dao.findSubject(id);
+        if (subject == null) {
+            System.out.println("Subject not found.");
+            return;
+        }
+        subject_dao.deleteSubject(id);
+        System.out.println("Subject deleted successfully!");
+    }
+
+    public static void readStudentById(Scanner scanner, StudentDAO student_dao) {
+        Long id = null;
+        while (true) {
+            System.out.print("Enter student ID to view: ");
+            String input = scanner.nextLine();
+            try {
+                id = Long.parseLong(input);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid ID. Please enter a numeric student ID.");
+            }
+        }
+        Student student = student_dao.findStudentById(id);
+        if (student == null) {
+            System.out.println("Student not found.");
+            return;
+        }
+        System.out.println("--- Student Info ---");
+        System.out.println("ID: " + student.getId());
+        System.out.println("Name: " + student.getName());
+        System.out.println("Birth Year: " + student.getBirthYear());
+        System.out.println("Email: " + student.getEmail());
+        System.out.println("Subjects: ");
+        if (student.getSubjects() == null || student.getSubjects().isEmpty()) {
+            System.out.println("  None");
+        } else {
+            for (Subject subj : student.getSubjects()) {
+                System.out.println("  - " + subj.getName() + " (" + subj.getCode() + ")");
+            }
+        }
+    }
+
+    public static void readSubjectById(Scanner scanner, SubjectDAO subject_dao) {
+        Long id = null;
+        while (true) {
+            System.out.print("Enter subject ID to view: ");
+            String input = scanner.nextLine();
+            try {
+                id = Long.parseLong(input);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid ID. Please enter a numeric subject ID.");
+            }
+        }
+        Subject subject = subject_dao.findSubject(id);
+        if (subject == null) {
+            System.out.println("Subject not found.");
+            return;
+        }
+        System.out.println("--- Subject Info ---");
+        System.out.println("ID: " + subject.getId());
+        System.out.println("Name: " + subject.getName());
+        System.out.println("Code: " + subject.getCode());
     }
 }
